@@ -1,26 +1,328 @@
 @import "tailwindcss";
 
+/* Material 3 colour roles, seeded from indigo #4B3FD6 */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary: #4b3fd6;
+  --on-primary: #ffffff;
+  --primary-container: #e3dfff;
+  --on-primary-container: #170065;
+  --secondary-container: #e4dff9;
+  --on-secondary-container: #1b192c;
+  --tertiary: #006a60;
+  --tertiary-container: #9ef2e3;
+  --on-tertiary-container: #00201c;
+  --surface: #fcf8ff;
+  --surface-low: #f6f2fc;
+  --surface-mid: #f0ecf6;
+  --surface-high: #eae7f1;
+  --surface-highest: #e5e1eb;
+  --on-surface: #1c1b22;
+  --on-surface-variant: #47464f;
+  --outline: #78767f;
+  --outline-variant: #c8c5d0;
+  --inverse-surface: #312f38;
+  --inverse-on-surface: #f3eff9;
+  --inverse-primary: #c5c0ff;
+  --console: #1c1a2e;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root[data-theme="dark"] {
+  --primary: #c5c0ff;
+  --on-primary: #2a17a8;
+  --primary-container: #4232bd;
+  --on-primary-container: #e3dfff;
+  --secondary-container: #47455c;
+  --on-secondary-container: #e4dff9;
+  --tertiary: #82d5c7;
+  --tertiary-container: #005048;
+  --on-tertiary-container: #9ef2e3;
+  --surface: #131218;
+  --surface-low: #1c1b22;
+  --surface-mid: #201f26;
+  --surface-high: #2a2931;
+  --surface-highest: #35343c;
+  --on-surface: #e5e1eb;
+  --on-surface-variant: #c8c5d0;
+  --outline: #918f9a;
+  --outline-variant: #47464f;
+  --inverse-surface: #e5e1eb;
+  --inverse-on-surface: #312f38;
+  --inverse-primary: #4b3fd6;
+  --console: #0d0c14;
+  color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --primary: #c5c0ff;
+    --on-primary: #2a17a8;
+    --primary-container: #4232bd;
+    --on-primary-container: #e3dfff;
+    --secondary-container: #47455c;
+    --on-secondary-container: #e4dff9;
+    --tertiary: #82d5c7;
+    --tertiary-container: #005048;
+    --on-tertiary-container: #9ef2e3;
+    --surface: #131218;
+    --surface-low: #1c1b22;
+    --surface-mid: #201f26;
+    --surface-high: #2a2931;
+    --surface-highest: #35343c;
+    --on-surface: #e5e1eb;
+    --on-surface-variant: #c8c5d0;
+    --outline: #918f9a;
+    --outline-variant: #47464f;
+    --inverse-surface: #e5e1eb;
+    --inverse-on-surface: #312f38;
+    --inverse-primary: #4b3fd6;
+    --console: #0d0c14;
+    color-scheme: dark;
   }
 }
 
+@theme inline {
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary-container: var(--on-tertiary-container);
+  --color-surface: var(--surface);
+  --color-surface-low: var(--surface-low);
+  --color-surface-mid: var(--surface-mid);
+  --color-surface-high: var(--surface-high);
+  --color-surface-highest: var(--surface-highest);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+  --color-inverse-surface: var(--inverse-surface);
+  --color-inverse-on-surface: var(--inverse-on-surface);
+  --color-inverse-primary: var(--inverse-primary);
+  --color-console: var(--console);
+  --font-sans: var(--font-flex);
+  --font-mono: var(--font-code);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.45, 0.5, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--surface);
+  color: var(--on-surface);
+  font-family: var(--font-flex), system-ui, sans-serif;
+  font-variation-settings: "ROND" 60;
+  transition: background-color 300ms, color 300ms;
+}
+
+/* Headlines get the full rounded, expressive treatment */
+.display {
+  font-variation-settings: "ROND" 100, "wdth" 110;
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@layer components {
+/* State layer: Material hover/press overlay in the element's own content colour */
+.state {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.state::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 200ms;
+  pointer-events: none;
+}
+.state:hover::before {
+  opacity: 0.08;
+}
+.state:active::before {
+  opacity: 0.12;
+}
+}
+
+/* Ripple spawned by <Ripples /> */
+.ripple-wave {
+  position: absolute;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0.18;
+  transform: scale(0);
+  pointer-events: none;
+  animation: ripple 550ms var(--ease-emphasized) forwards;
+}
+@keyframes ripple {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise {
+  animation: rise 800ms var(--ease-emphasized) both;
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin-slow {
+  animation: spin-slow 40s linear infinite;
+}
+
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+.caret {
+  animation: caret 1s steps(1) infinite;
+}
+
+
+/* Hero name: letters wave in, then react to the cursor via --w (weight) and --x (width) */
+.name-letter {
+  display: inline-block;
+  font-variation-settings: "wght" var(--w, 800), "wdth" var(--x, 100), "ROND" 100;
+  transition: font-variation-settings 400ms var(--ease-emphasized);
+  animation: letter-in 900ms var(--ease-spring) both;
+}
+@keyframes letter-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em) rotate(8deg);
+    font-variation-settings: "wght" 200, "wdth" 60, "ROND" 100;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Scroll reveal; only hidden when JS is running so content never gets stuck invisible */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(32px) scale(0.98);
+  transition:
+    opacity 700ms var(--ease-emphasized),
+    transform 900ms var(--ease-emphasized);
+  transition-delay: var(--d, 0ms);
+}
+.js .reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Tech marquee */
+.marquee {
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+  animation: marquee 40s linear infinite;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Reading progress, driven by scroll position where supported */
+.progress {
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  animation: grow linear both;
+  animation-timeline: scroll(root);
+}
+@keyframes grow {
+  to {
+    transform: scaleX(1);
+  }
+}
+@supports not (animation-timeline: scroll()) {
+  .progress {
+    display: none;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6) rotate(-20deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.pop-in {
+  animation: pop-in 1100ms var(--ease-spring) both;
+}
+
+@keyframes float {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.float {
+  animation: float 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .rise,
+  .caret,
+  .spin-slow,
+  .ripple-wave,
+  .name-letter,
+  .marquee-track,
+  .pop-in,
+  .float {
+    animation: none;
+  }
+  .name-letter {
+    transition: none;
+  }
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .ripple-wave {
+    display: none;
+  }
 }
